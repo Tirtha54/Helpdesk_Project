@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nettech Helpdesk - Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
+</head>
+<body>
+
+  <div class="admin-bar d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><i class="bi bi-headset"></i> NETTECH Helpdesk - Admin</h5>
+    <div class="d-flex align-items-center">
+      <span class="avatar bg-white text-primary me-2" id="avatar" style="cursor:pointer" onclick="openProfile()"></span>
+      <span id="adminName" class="me-3"></span>
+      <button onclick="openProfile()" class="btn btn-outline-light btn-sm me-2">Profile</button>
+      <button onclick="logout()" class="btn btn-light btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <div class="container-fluid p-4">
+    <h4 class="mb-3">Helpdesk Overview</h4>
+
+    
+    <div class="row mb-4">
+      <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#2563eb"><i class="bi bi-ticket-perforated text-primary"></i><h2 id="total">0</h2><small>Total Tickets</small></div></div>
+      <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#f97316"><i class="bi bi-clock text-warning"></i><h2 id="pending">0</h2><small>Pending</small></div></div>
+      <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#3b82f6"><i class="bi bi-gear text-info"></i><h2 id="progress">0</h2><small>In Progress</small></div></div>
+      <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#22c55e"><i class="bi bi-check-circle text-success"></i><h2 id="done">0</h2><small>Closed</small></div></div>
+    </div>
+
+    
+    <div class="card p-3 mb-4">
+      <h6>Quick Actions</h6>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" onclick="quickFilter('', '')"><i class="bi bi-list-ul"></i> All Tickets</button>
+        <button class="btn btn-outline-warning" onclick="quickFilter('Pending', '')"><i class="bi bi-clock"></i> Pending Tickets</button>
+        <button class="btn btn-outline-danger" onclick="quickFilter('', 'High')"><i class="bi bi-exclamation-triangle"></i> High Priority</button>
+      </div>
+    </div>
+
+    
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3"><div class="card p-3"><h6>Tickets by Status</h6><div id="statusChart"></div></div></div>
+      <div class="col-md-6 mb-3"><div class="card p-3"><h6>Tickets by Category</h6><div id="categoryChart"></div></div></div>
+    </div>
+
+   
+    <div class="card p-3" id="ticketsCard">
+      <h5>All Support Tickets</h5>
+
+      <div class="row g-2 mb-3">
+        <div class="col-md-4"><input type="text" id="search" class="form-control" placeholder="Search title or user..." oninput="showTickets()"></div>
+        <div class="col-md-2 col-4">
+          <select id="fStatus" class="form-select" onchange="showTickets()">
+            <option value="">All Status</option>
+            <option>Pending</option><option>In Progress</option><option>Resolved</option><option>Approved</option><option>Rejected</option>
+          </select>
+        </div>
+        <div class="col-md-2 col-4">
+          <select id="fPriority" class="form-select" onchange="showTickets()">
+            <option value="">All Priority</option>
+            <option>High</option><option>Medium</option><option>Low</option>
+          </select>
+        </div>
+        <div class="col-md-2 col-4">
+          <select id="fCategory" class="form-select" onchange="showTickets()">
+            <option value="">All Category</option>
+            <option>IT Issue</option><option>Leave Approval</option><option>Account & Access</option>
+            <option>Network</option><option>Hardware</option><option>Email</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr><th>ID</th><th>User</th><th>Ticket</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th><th></th></tr>
+          </thead>
+          <tbody id="ticketList"></tbody>
+        </table>
+      </div>
+
+      
+      <div id="pager" class="d-flex justify-content-center align-items-center mt-2"></div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">My Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-3">
+            <img id="profileImg" class="rounded-circle mb-2" width="100" height="100" style="object-fit:cover; display:none">
+            <input type="file" id="picture" class="form-control mb-2" accept="image/*">
+            <button onclick="uploadPicture()" class="btn btn-outline-primary btn-sm">Upload Picture</button>
+          </div>
+          <label class="form-label">Full Name</label>
+          <input type="text" id="profileName" class="form-control mb-3">
+          <label class="form-label">Email</label>
+          <input type="text" id="profileEmail" class="form-control" disabled>
+        </div>
+        <div class="modal-footer">
+          <button onclick="updateProfile()" class="btn btn-success">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="effects.js"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>

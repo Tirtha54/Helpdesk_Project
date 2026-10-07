@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nettech Helpdesk - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
+</head>
+<body>
+
+  <!-- sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h4><i class="bi bi-headset"></i> NETTECH</h4>
+    <a id="nav-dashboard" class="active" onclick="showSection('dashboard')"><i class="bi bi-house"></i>Dashboard</a>
+    <a id="nav-tickets" onclick="showSection('tickets')"><i class="bi bi-ticket-perforated"></i>My Tickets</a>
+    <a id="nav-raise" onclick="showSection('raise')"><i class="bi bi-plus-circle"></i>Raise Ticket</a>
+    <a id="nav-profile" onclick="showSection('profile')"><i class="bi bi-person"></i>Profile</a>
+    <hr>
+    <a class="logout-link" onclick="logout()"><i class="bi bi-box-arrow-left"></i>Logout</a>
+  </div>
+
+  <div class="main">
+
+    <!-- top bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <button class="btn btn-outline-primary menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <i class="bi bi-list"></i>
+      </button>
+      <h4 class="mb-0 d-none d-md-block"><span id="greeting"></span>, <span id="userName"></span> 👋</h4>
+      <span class="avatar" id="avatar"></span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+
+      <div class="card p-3 mb-4">
+        <h6>Quick Actions</h6>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary" onclick="showSection('raise')"><i class="bi bi-plus-lg"></i> Raise Ticket</button>
+          <button class="btn btn-outline-primary" onclick="showSection('tickets')"><i class="bi bi-ticket-perforated"></i> My Tickets</button>
+          <button class="btn btn-outline-primary" onclick="showSection('profile')"><i class="bi bi-person"></i> Edit Profile</button>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#2563eb"><i class="bi bi-ticket-perforated text-primary"></i><h2 id="total">0</h2><small>Total Tickets</small></div></div>
+        <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#f97316"><i class="bi bi-clock text-warning"></i><h2 id="pending">0</h2><small>Pending</small></div></div>
+        <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#3b82f6"><i class="bi bi-gear text-info"></i><h2 id="progress">0</h2><small>In Progress</small></div></div>
+        <div class="col-6 col-lg-3 mb-3"><div class="card stat" style="border-color:#22c55e"><i class="bi bi-check-circle text-success"></i><h2 id="done">0</h2><small>Closed</small></div></div>
+      </div>
+
+      <div class="card p-3">
+        <h5>Recent Tickets</h5>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead><tr><th>ID</th><th>Ticket</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="recentList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY TICKETS -->
+    <div id="tickets" style="display:none">
+      <div class="card p-3">
+        <h5>My Tickets</h5>
+        <input type="text" id="search" class="form-control mb-3" placeholder="Search tickets by title or category..." oninput="showTickets()">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead><tr><th>ID</th><th>Ticket</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="ticketList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAISE TICKET -->
+    <div id="raise" style="display:none">
+      <div class="row">
+        <div class="col-lg-7 mb-3">
+          <div class="card p-4">
+            <h5>Create a Support Ticket</h5>
+            <p id="ticketMsg"></p>
+
+            <label class="form-label">Category</label>
+            <select id="category" class="form-select mb-3">
+              <option>IT Issue</option>
+              <option>Leave Approval</option>
+              <option>Account & Access</option>
+              <option>Network</option>
+              <option>Hardware</option>
+              <option>Email</option>
+              <option>Other</option>
+            </select>
+
+            <label class="form-label">Title</label>
+            <input type="text" id="title" class="form-control mb-3" placeholder="Short title" maxlength="150">
+
+            <label class="form-label">Describe your issue</label>
+            <textarea id="description" class="form-control mb-3" rows="4" maxlength="1000"></textarea>
+
+            <label class="form-label">Priority</label>
+            <select id="priority" class="form-select mb-3">
+              <option>High</option>
+              <option selected>Medium</option>
+              <option>Low</option>
+            </select>
+
+            <button onclick="raiseTicket()" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Submit Ticket</button>
+          </div>
+        </div>
+
+        <div class="col-lg-5 mb-3">
+          <div class="card p-4">
+            <h6>Before submitting</h6>
+            <ul class="text-muted small ps-3 mb-0">
+              <li class="mb-2">Give a clear, short title</li>
+              <li class="mb-2">Describe the problem and what you already tried</li>
+              <li class="mb-2">Choose the correct category</li>
+              <li>Use High priority only for urgent work blocking issues</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profile" style="display:none">
+      <div class="card p-4" style="max-width:500px">
+        <h5>My Profile</h5>
+        <p id="profileMsg" class="text-success"></p>
+
+        <div class="text-center mb-3">
+          <img id="profileImg" class="rounded-circle mb-2" width="110" height="110" style="object-fit:cover; display:none">
+          <input type="file" id="picture" class="form-control mb-2" accept="image/*">
+          <button onclick="uploadPicture()" class="btn btn-outline-primary btn-sm">Upload Picture</button>
+        </div>
+
+        <label class="form-label">Full Name</label>
+        <input type="text" id="profileName" class="form-control mb-3">
+        <label class="form-label">Email</label>
+        <input type="text" id="profileEmail" class="form-control mb-3" disabled>
+        <button onclick="updateProfile()" class="btn btn-success">Save Changes</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- end of main -->
+
+  <!-- ticket detail popup -->
+  <div class="modal fade" id="ticketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted mb-1">Description</p>
+          <p id="mDesc" style="white-space: pre-wrap"></p>
+          <hr>
+          <div class="row">
+            <div class="col-6 mb-3"><small class="text-muted">Category</small><div id="mCategory"></div></div>
+            <div class="col-6 mb-3"><small class="text-muted">Priority</small><div id="mPriority"></div></div>
+            <div class="col-6"><small class="text-muted">Status</small><div id="mStatus"></div></div>
+            <div class="col-6"><small class="text-muted">Raised on</small><div id="mDate"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="effects.js"></script>
+  <script src="user.js"></script>
+
+</body>
+</html>
